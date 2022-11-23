@@ -3,8 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { auth } from "../config/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+const md5 = require("md5");
 
 function Register() {
+  const hashpassword = (pass) => {
+    const md5pass = md5(pass);
+    return md5pass;
+  };
+
   const [input, setInput] = useState({
     email: "",
     password: "",
@@ -20,25 +26,23 @@ function Register() {
     setInput({ ...input, [name]: value });
   };
 
- 
-
   const handleSubmit = () => {
     createUserWithEmailAndPassword(
       auth,
       input.email,
-    
-      input.password
+
+      hashpassword(input.password)
     )
       .then((userCredential) => {
         // Signed in
-
+        
         const user = userCredential.user;
         navigate("/chatpage");
         // ...
       })
       .catch((error) => {
         // ..
-        alert(error)
+        alert(error);
       });
   };
 
@@ -51,7 +55,7 @@ function Register() {
         >
           <img
             className="w-8 h-8 mr-2"
-            src="https://cdn-icons-png.flaticon.com/512/566/566769.png"
+            src="https://cdn-icons-png.flaticon.com/512/2387/2387679.png"
             alt="logo"
           />
           Chat App
@@ -61,7 +65,7 @@ function Register() {
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Sign Up
             </h1>
-            <form className="space-y-4 md:space-y-6" action="#">
+            <div className="space-y-4 md:space-y-6">
               <div>
                 <label
                   htmlFor="email"
@@ -72,11 +76,10 @@ function Register() {
                 <input
                   type="email"
                   name="email"
-                  id="email"
                   value={input.email}
                   onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="name@company.com"
+                  placeholder="Email"
                   required
                 />
               </div>
@@ -90,7 +93,6 @@ function Register() {
                 <input
                   type="password"
                   name="password"
-                  id="password"
                   value={input.password}
                   onChange={handleChange}
                   placeholder="••••••••"
@@ -106,8 +108,7 @@ function Register() {
                       aria-describedby="remember"
                       type="checkbox"
                       className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
-                    required
-
+                      required
                     />
                   </div>
                   <div className="ml-3 text-sm">
@@ -142,7 +143,7 @@ function Register() {
                   Login
                 </Link>
               </p>
-            </form>
+            </div>
           </div>
         </div>
       </div>

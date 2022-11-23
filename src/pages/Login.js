@@ -3,13 +3,24 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../config/firebase";
 import { useState } from "react";
+import { GlobalContext } from "../context/context";
+import { useContext } from "react";
+import md5 from "md5";
+
 function Login() {
   const [input, setInput] = useState({
     email: "",
     password: "",
   });
 
-  const navigate = useNavigate()
+  const { user, setUser } = useContext(GlobalContext);
+
+  const navigate = useNavigate();
+
+  const hashpassword = (pass) => {
+    const md5pass = md5(pass);
+    return md5pass;
+  };
 
   const handleChange = (event) => {
     let value = event.target.value;
@@ -18,18 +29,23 @@ function Login() {
     setInput({ ...input, [name]: value });
   };
   const handleSubmit = () => {
-    signInWithEmailAndPassword(auth, input.email, input.password)
+    signInWithEmailAndPassword(auth, input.email, hashpassword(input.password))
       .then((userCredential) => {
         // Signed in
-        const user = userCredential.user;
-        console.log(user);
-        navigate('/chatpage')
+        const userinfo = userCredential.user;
+        console.log(hashpassword(input.password));
+        sessionStorage.setItem(
+          "Auth Token",
+          userCredential._tokenResponse.refreshToken
+        );
+
+        navigate("/chatpage");
         // ...
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.log(errorCode,errorMessage);
+        console.log(errorCode, errorMessage);
       });
   };
 
@@ -42,7 +58,7 @@ function Login() {
         >
           <img
             className="w-8 h-8 mr-2"
-            src="https://cdn-icons-png.flaticon.com/512/566/566769.png"
+            src="https://cdn-icons-png.flaticon.com/512/2387/2387679.png"
             alt="logo"
           />
           Chat App
@@ -52,7 +68,7 @@ function Login() {
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Sign in to your account
             </h1>
-            <form className="space-y-4 md:space-y-6" action="#">
+            <div className="space-y-4 md:space-y-6">
               <div>
                 <label
                   htmlFor="email"
@@ -63,7 +79,6 @@ function Login() {
                 <input
                   type="email"
                   name="email"
-                  id="email"
                   value={input.email}
                   onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -81,7 +96,6 @@ function Login() {
                 <input
                   type="password"
                   name="password"
-                  id="password"
                   placeholder="••••••••"
                   value={input.password}
                   onChange={handleChange}
@@ -132,7 +146,7 @@ function Login() {
                   Sign up
                 </Link>
               </p>
-            </form>
+            </div>
           </div>
         </div>
       </div>
