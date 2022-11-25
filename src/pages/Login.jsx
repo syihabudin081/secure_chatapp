@@ -3,8 +3,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../config/firebase";
 import { useState } from "react";
-import { GlobalContext } from "../context/context";
-import { useContext } from "react";
+
 import md5 from "md5";
 
 function Login() {
@@ -13,7 +12,7 @@ function Login() {
     password: "",
   });
 
-  const { user, setUser } = useContext(GlobalContext);
+
 
   const navigate = useNavigate();
 
@@ -25,15 +24,16 @@ function Login() {
   const handleChange = (event) => {
     let value = event.target.value;
     let name = event.target.name;
-    console.log(value);
+   
     setInput({ ...input, [name]: value });
   };
   const handleSubmit = () => {
+    
     signInWithEmailAndPassword(auth, input.email, hashpassword(input.password))
       .then((userCredential) => {
         // Signed in
-        const userinfo = userCredential.user;
-        console.log(hashpassword(input.password));
+        
+        console.log("password setelah di hash: ", hashpassword(input.password));
         sessionStorage.setItem(
           "Auth Token",
           userCredential._tokenResponse.refreshToken
@@ -52,7 +52,7 @@ function Login() {
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-        <a
+        <div
           href="#"
           className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"
         >
@@ -62,7 +62,7 @@ function Login() {
             alt="logo"
           />
           Todo List
-        </a>
+        </div>
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
@@ -123,12 +123,12 @@ function Login() {
                     </label>
                   </div>
                 </div>
-                <a
+                <div
                   href="#"
                   className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500"
                 >
                   Forgot password?
-                </a>
+                </div>
               </div>
               <button
                 type="submit"

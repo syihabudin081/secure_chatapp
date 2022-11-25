@@ -1,7 +1,7 @@
-import React, { useContext } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { GlobalContext } from "../context/context";
+
 import { useState } from "react";
 import {
   addDoc,
@@ -15,7 +15,6 @@ import db from "../config/firebase";
 import CryptoJS from "crypto-js";
 
 function Chatpage() {
-  // const { user, setUser } = useContext(GlobalContext);
   const [input, setInput] = useState("");
   const [todos, setTodos] = useState([]);
 
@@ -23,9 +22,7 @@ function Chatpage() {
 
   useEffect(() => {
     let authToken = sessionStorage.getItem("Auth Token");
-    // //    let userdata = sessionStorage.getItem("userdata")
-    // //    setUser(userdata)
-    // //  console.log(userdata.email);
+
     if (authToken) {
       navigate("/chatpage");
     }
@@ -38,21 +35,13 @@ function Chatpage() {
   }, []);
 
   const readData = async () => {
-    // console.log("hai");
-    // const querySnapshot = await getDocs(collection(db, "todo"));
-    // querySnapshot.forEach((element) => {
-    //   let data = element.data();
-    //   console.log(data);
-    //   setTodo((arr) => [...arr, data]);
-    // });
-
     await getDocs(collection(db, "todo")).then((querySnapshot) => {
       const newData = querySnapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
       setTodos(newData);
-      console.log(todos, newData);
+      
     });
   };
 
@@ -64,6 +53,7 @@ function Chatpage() {
       });
 
       console.log("Document written with ID: ", docRef.id);
+     
     } catch (e) {
       console.error("Error adding document: ", e);
     }
@@ -76,13 +66,12 @@ function Chatpage() {
 
   const handleChange = (event) => {
     let value = encrypttext(event.target.value);
-   
+
     setInput(value);
-    ;
   };
 
   const encrypttext = (message) => {
-    console.log(message);
+    
     let ciphertext = CryptoJS.AES.encrypt(
       message,
       "secret key ahahah"
@@ -95,8 +84,8 @@ function Chatpage() {
       ciphertext,
       "secret key ahahah"
     ).toString(CryptoJS.enc.Utf8);
-console.log(decrypted);
-    return decrypted
+    
+    return decrypted;
   };
 
   const handleinput = () => {
@@ -120,12 +109,12 @@ console.log(decrypted);
   const handleUpdate = async (id, status) => {
     const washingtonRef = doc(db, "todo", id);
     console.log(status);
-    if (status == true) {
+    if (status === true) {
       await updateDoc(washingtonRef, {
         status: false,
       });
     }
-    if (status == false) {
+    if (status === false) {
       await updateDoc(washingtonRef, {
         status: true,
       });
@@ -137,8 +126,8 @@ console.log(decrypted);
     <div className="h-100 w-full flex items-center justify-center bg-teal-lightest font-sans">
       <div className="bg-white rounded shadow p-6 m-4 w-full lg:w-3/4 lg:max-w-lg">
         <div className="mb-4 ">
-          <div class="flex justify-between bg-blue-400 p-3 rounded full items-center">
-            <div class="flex gap-1 items-center">
+          <div className="flex justify-between bg-blue-400 p-3 rounded full items-center">
+            <div className="flex gap-1 items-center">
               {" "}
               <img
                 className="w-8 h-8 mr-2"
@@ -156,13 +145,13 @@ console.log(decrypted);
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke-width="1.5"
+                strokeWidth="1.5"
                 stroke="currentColor"
-                class="w-6 h-6"
+                className="w-6 h-6"
               >
                 <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
                 />
               </svg>
@@ -188,9 +177,11 @@ console.log(decrypted);
         <div>
           {todos != null ? (
             todos.map((data, index) => (
-              <div className="flex mb-4 items-center" key={{ index }}>
-                <p className="w-full text-grey-darkest">{(decrypttext(data.todo))}</p>
-                {data.status == true ? (
+              <div className="flex mb-4 items-center" key={data.id}>
+                <p className="w-full text-grey-darkest">
+                  {decrypttext(data.todo)}
+                </p>
+                {data.status === true ? (
                   <button
                     className="flex-no-shrink p-2 ml-4 mr-2 border-2 rounded text-white hover:text-white text-green bg-green-500 border-green-500 hover:bg-green-500"
                     onClick={() => {
