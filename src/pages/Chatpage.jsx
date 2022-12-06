@@ -1,10 +1,11 @@
+/* eslint-disable jsx-a11y/alt-text */
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 import { useState } from "react";
 import {
-  addDoc,
+  
   collection,
   getDocs,
   doc,
@@ -15,10 +16,18 @@ import db from "../config/firebase";
 import CryptoJS from "crypto-js";
 
 function Chatpage() {
-  const [input, setInput] = useState("");
+ 
   const [todos, setTodos] = useState([]);
 
   let navigate = useNavigate();
+
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("Auth Token");
+    navigate("/login");
+  };
+
+
 
   useEffect(() => {
     let authToken = sessionStorage.getItem("Auth Token");
@@ -34,6 +43,10 @@ function Chatpage() {
     readData();
   }, []);
 
+
+
+
+
   const readData = async () => {
     await getDocs(collection(db, "todo")).then((querySnapshot) => {
       const newData = querySnapshot.docs.map((doc) => ({
@@ -41,59 +54,24 @@ function Chatpage() {
         id: doc.id,
       }));
       setTodos(newData);
-      
     });
   };
 
-  const createdata = async () => {
-    try {
-      const docRef = await addDoc(collection(db, "todo"), {
-        todo: input,
-        status: false,
-      });
-
-      console.log("Document written with ID: ", docRef.id);
-     
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
-  };
-
-  const handleLogout = () => {
-    sessionStorage.removeItem("Auth Token");
-    navigate("/login");
-  };
-
-  const handleChange = (event) => {
-    let value = encrypttext(event.target.value);
-
-    setInput(value);
-  };
-
-  const encrypttext = (message) => {
-    
-    let ciphertext = CryptoJS.AES.encrypt(
-      message,
-      "secret key ahahah"
-    ).toString();
-    return ciphertext;
-  };
-
   const decrypttext = (ciphertext) => {
-    let decrypted = CryptoJS.AES.decrypt(
+    var decrypted = CryptoJS.AES.decrypt(
       ciphertext,
-      "secret key ahahah"
+      "Secret Passphrase"
     ).toString(CryptoJS.enc.Utf8);
-    
-    return decrypted;
-  };
 
-  const handleinput = () => {
-    createdata();
-    readData();
+    var decrypted2 = CryptoJS.DES.decrypt(
+      decrypted,
+      "Secret Passphrase"
+    ).toString(CryptoJS.enc.Utf8);
+    return decrypted2;
   };
 
   const handleDelete = (id) => {
+
     const docRef = doc(db, "todo", id);
 
     deleteDoc(docRef)
@@ -123,8 +101,8 @@ function Chatpage() {
   };
 
   return (
-    <div className="h-100 w-full flex items-center justify-center bg-teal-lightest font-sans">
-      <div className="bg-white rounded shadow p-6 m-4 w-full lg:w-3/4 lg:max-w-lg">
+    <div className="h-100 w-full flex items-center justify-center bg-teal-lightest font-sans ">
+      <div className="bg-white rounded shadow p-6 m-4 w-full lg:w-3/4 ">
         <div className="mb-4 ">
           <div className="flex justify-between bg-blue-400 p-3 rounded full items-center">
             <div className="flex gap-1 items-center">
@@ -136,77 +114,88 @@ function Chatpage() {
               />
               <h1 className="text-white font-bold">Todo List</h1>
             </div>
-            <button
-              type="button"
-              className="inline-flex items-center justify-center rounded-lg border h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none"
-              onClick={handleLogout}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-6 h-6"
+            <Link to="/addtodo">
+              <button
+                type="button"
+                className="inline-flex items-center justify-center rounded-lg  h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/8238/8238019.png"
+                  className="w-6 h-6"
                 />
-              </svg>
-            </button>
-          </div>
-          <div className="flex mt-4">
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 mr-4 text-grey-darker"
-              placeholder="Add Todo"
-              name="todo"
-              value={input.todo}
-              onChange={handleChange}
-            />
+              </button>
+            </Link>
+           
+            <Link to="/encryptfile">
+              <button
+                type="button"
+                className="inline-flex items-center justify-center rounded-lg  h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none"
+              >
+                <img
+                  src=" https://cdn-icons-png.flaticon.com/512/44/44289.png"
+                  className="w-6 h-6"
+                />
+              </button>
+            </Link>
             <button
-              className="flex-no-shrink p-2 border-2 rounded text-teal border-blue-500 hover:text-white hover:bg-blue-300"
-              onClick={handleinput}
-            >
-              Add
-            </button>
+                type="button"
+                className="inline-flex items-center justify-center rounded-lg  h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none"
+                onClick={handleLogout}
+              >
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/4400/4400828.png"
+                  className="w-6 h-6"
+                />
+              </button>
           </div>
         </div>
 
         <div>
           {todos != null ? (
             todos.map((data, index) => (
-              <div className="flex mb-4 items-center" key={data.id}>
-                <p className="w-full text-grey-darkest">
-                  {decrypttext(data.todo)}
-                </p>
+              <div
+                className="flex mb-4 items-center justify-center "
+                key={data.id}
+              >
+                <div className="w-full flex flex-col text-grey-darkest text-xs md:text-base ">
+                  <p className="w-full text-grey-darkest font-semibold text-sm md:text-lg">
+                    {decrypttext(data.name)}
+                  </p>
+                  <p className="w-full text-grey-darkest text-xs md:text-base font-light">
+                    {decrypttext(data.desc)}
+                  </p>
+                </div>
+                
+                  <p className="w-full text-grey-darkest text-xs md:text-base font-light">
+                    {decrypttext(data.date)}
+                  </p>
+               
+
                 {data.status === true ? (
-                  <button
-                    className="flex-no-shrink p-2 ml-4 mr-2 border-2 rounded text-white hover:text-white text-green bg-green-500 border-green-500 hover:bg-green-500"
+                  <img
+                    src="https://img.icons8.com/fluency/512/ok.png"
+                    className="w-8 h-8"
                     onClick={() => {
                       handleUpdate(data.id, data.status);
                     }}
-                  >
-                    Done
-                  </button>
+                  /> 
                 ) : (
-                  <button
-                    className="flex-no-shrink p-2 ml-4 mr-2 border-2 rounded hover:text-white text-green border-green-500 hover:bg-green-500"
+                 <img
+                    src="https://img.icons8.com/external-flatart-icons-outline-flatarticons/512/external-unchecked-basic-ui-elements-flatart-icons-outline-flatarticons.png"
+                    className="w-8 h-8"
                     onClick={() => {
                       handleUpdate(data.id, data.status);
                     }}
-                  >
-                    Not Done
-                  </button>
+                  />
                 )}
 
-                <button
-                  className="flex-no-shrink p-2 ml-2 border-2 rounded text-red border-red-500 hover:text-white hover:bg-red-500"
-                  onClick={() => handleDelete(data.id)}
-                >
-                  Remove
-                </button>
+                <img
+                  className="w-8 h-8"
+                  onClick={() => {
+                    handleDelete(data.id);
+                  }}
+                  src="https://img.icons8.com/fluency/512/delete-forever.png"
+                />
               </div>
             ))
           ) : (
